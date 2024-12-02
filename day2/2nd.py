@@ -49,10 +49,7 @@ matrix = getInput(False)
 safeLines = [x for x in matrix if isSafe(x)]
 unsafeLines = [x for x in matrix if x not in safeLines]
 tolerantLines = [x for x in unsafeLines if isSafeTolerant(x)]
-result = len(safeLines) + len(tolerantLines)
 
-print(f'Result: {result}')
+print(f'Result: {len(safeLines)}')
 
-
-
-print(f'Result 2 : {result}')
+print(f'Result 2 : {len(safeLines)+len(tolerantLines)}')
