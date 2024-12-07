@@ -54,31 +54,34 @@ class Node() :
 
 
 class PathNode(Node) :
-    def __init__(self, node, direction) :
+    def __init__(self, node, direction, index, previousNode=None, nextNode=None) :
         #print(f'Creating PathNode: {node}, {direction}, {type(node)}')
         super().__init__(node.x, node.y)
         self.node = node
         self.direction = direction
-    
-        
-class Path() :
+        self.previous = previousNode
+        self.next = nextNode
+        self.index = index
+
+class Path(): 
     def __init__(self, startPathNode) :
         self.startPathNode = startPathNode
         self.pathNodes = {(startPathNode.node, startPathNode.direction):startPathNode}
         self.looping = False
         self.outOfBounds = False
-    
-    def appendNode(self, node, direction) :
+   
+     
+    def appendNode(self, node, direction, previousPathNode) :
         
         if node is None :
             self.setOutOfBounds() 
             return 'outOfBounds detected'
 
-        if self.pathNodes.get((node, direction)) :
+        if (node, direction) in self.pathNodes:
             self.setLooping() 
             return self.pathNodes.get((node, direction))
         
-        pathNode = PathNode(node, direction)
+        pathNode = PathNode(node, direction, previousPathNode.index)
         self.pathNodes[(pathNode.node, pathNode.direction)] = pathNode
         return pathNode
     
@@ -87,7 +90,6 @@ class Path() :
     
     def setOutOfBounds(self) :
         self.outOfBounds = True
-
 
 class PathBuilder() :
     def __init__(self, startPathNode, worldMap, addObstacle = []) :
@@ -109,10 +111,11 @@ class PathBuilder() :
                     path.setOutOfBounds()
                     return path
             
+            nextPathNode = path.appendNode(nextNode, direction, curPathNode)
+            
             if path.looping :
                 return path
 
-            nextPathNode = path.appendNode(nextNode, direction)
             #print(f'Got next Node: {nextPathNode}')
             curPathNode = nextPathNode 
   
@@ -143,7 +146,7 @@ class WorldMap() :
                 self.obstacles.append(node) if value == "#" else None 
                     
     def getStartNode(self) :
-        return PathNode(self.startNode, "N" )
+        return PathNode(self.startNode, "N", 0 )
     
     def getNode(self, pos) :
         return self.worldMap.get(pos, None)
@@ -180,7 +183,7 @@ for obstacle in obstacles :
     loopingPaths.append((obstacle, newPath)) if newPath.looping else None
     print(f'{step}, {time.time()-starttime:.2f}s') if step%100 == 0 else None
 assertExpected(len(loopingPaths), 6)
-assertExpected(len(set([x[0] for x in loopingPaths])), 6)
+assertExpected(len(set([x[0] for x in loopingPaths])), 1951)
 
 '''    
 data = getInput()
