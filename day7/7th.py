@@ -27,6 +27,7 @@ def getInput(test = None, day = 7) :
     return data
 
 equations=getInput()
+equations = [list(map(int, x)) for x in equations]
 
 #making it fun, no string thingys :p
 def concatOperation(a,b) :
@@ -46,7 +47,6 @@ def applyOperation(truthValue, currentValue, remainingNumbers):
     return resultMul + resultSum + resultConcat
 
 result = []
-equations = [list(map(int, x)) for x in equations]
 for i, equation in enumerate(equations) :
     print(f'Checking {equation} on step {i}') if i%10 ==0 else None
     result.append((equation[0], applyOperation(equation[0], equation[1], equation[2:])))
